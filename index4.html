@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="KEDS - Karolinska Exhaustion Disorder Scale. Självskattningstest för utmattningssyndrom.">
+  <title>KEDS – Karolinska Exhaustion Disorder Scale</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --background-color: #f8f9fa;
+      --text-color: #333;
+      --card-bg: #ffffff;
+      --border-color: #e0e0e0;
+      --success-color: #27ae60;
+      --warning-color: #f39c12;
+      --danger-color: #e74c3c;
+      --button-bg: #3498db;
+      --button-hover: #2980b9;
+      --button-text: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 1rem;
+    }
+
+    /* Language selector - STÖRRE */
+    .lang-selector {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--button-bg);
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: var(--button-text);
+      padding: 10px 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      font-weight: 500;
+      z-index: 10;
+    }
+
+    .lang-selector:hover {
+      background-color: var(--button-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Progress bar */
+    .progress-container {
+      margin-bottom: 30px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background-color: var(--border-color);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background-color: var(--secondary-color);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    /* Question container */
+    .question-container {
+      display: none;
+    }
+
+    .question-container.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .question-title {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+
+    .question-text {
+      font-size: 1.1rem;
+      margin-bottom: 25px;
+      line-height: 1.6;
+      color: var(--text-color);
+    }
+
+    /* Answer options - NUMMERERADE */
+    .answer-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .answer-option {
+      display: flex;
+      align-items: flex-start;
+      padding: 15px;
+      background-color: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .answer-option:hover {
+      border-color: var(--secondary-color);
+      background-color: rgba(52, 152, 219, 0.05);
+    }
+
+    .answer-option.selected {
+      border-color: var(--secondary-color);
+      background-color: rgba(52, 152, 219, 0.1);
+    }
+
+    .answer-option input[type="radio"] {
+      margin-right: 12px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      margin-top: 2px;
+    }
+
+    .answer-option label {
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: var(--text-color);
+      flex: 1;
+    }
+
+    .answer-number {
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-right: 8px;
+      min-width: 20px;
+    }
+
+    /* GDPR notice */
+    .gdpr-notice {
+      background-color: rgba(52, 152, 219, 0.05);
+      border-left: 4px solid var(--secondary-color);
+      padding: 12px 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    .gdpr-notice strong {
+      color: var(--primary-color);
+    }
+
+    /* Navigation buttons */
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .btn-primary {
+      background-color: var(--button-bg);
+      color: var(--button-text);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--button-hover);
+    }
+
+    .btn-primary:disabled {
+      background-color: #bdc3c7;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .btn-secondary {
+      background-color: var(--background-color);
+      color: var(--primary-color);
+      border: 2px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--border-color);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Result page */
+    .result-page {
+      display: none;
+      text-align: center;
+    }
+
+    .result-page.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .result-score {
+      font-size: 3rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin: 20px 0;
+    }
+
+    .result-level {
+      font-size: 1.5rem;
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+
+    .result-level.low {
+      background-color: rgba(39, 174, 96, 0.1);
+      color: var(--success-color);
+    }
+
+    .result-level.high {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: var(--danger-color);
+    }
+
+    .result-advice {
+      background-color: rgba(52, 152, 219, 0.05);
+      padding: 20px;
+      border-radius: 8px;
+      margin: 25px 0;
+      text-align: left;
+    }
+
+    .result-advice h3 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .result-advice p {
+      margin-bottom: 10px;
+    }
+
+    /* Info section */
+    .info-section {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: rgba(52, 152, 219, 0.05);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .info-section h3 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #888;
+      font-size: 0.8rem;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .question-text {
+        font-size: 1rem;
+      }
+
+      .result-score {
+        font-size: 2.5rem;
+      }
+
+      .navigation {
+        flex-direction: column-reverse;
+        gap: 10px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 15px;
+      }
+
+      .header h1 {
+        font-size: 1.3rem;
+      }
+
+      .result-score {
+        font-size: 2rem;
+      }
+
+      .result-level {
+        font-size: 1.2rem;
+      }
+
+      .gdpr-notice {
+        font-size: 0.8rem;
+        padding: 10px;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      .lang-selector,
+      .navigation,
+      .btn {
+        display: none !important;
+      }
+
+      .question-container {
+        display: block !important;
+        page-break-inside: avoid;
+      }
+
+      body {
+        background-color: white;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Language selector -->
+    <button class="lang-selector" onclick="toggleLanguage()">🌐</button>
+
+    <!-- Header -->
+    <div class="header">
+      <h1 id="title">KEDS – Karolinska Exhaustion Disorder Scale</h1>
+      <p id="subtitle">Självskattningstest för utmattningssyndrom</p>
+    </div>
+
+    <!-- GDPR Notice -->
+    <div class="gdpr-notice">
+      <strong>🔒</strong> <span id="gdpr-text">Ingen data sparas på servern. Dina svar lagras endast lokalt i din webbläsare under testets gång och raderas när du stänger fliken.</span>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text" id="progress-text">Fråga 1 av 9</div>
+    </div>
+
+    <!-- Question pages -->
+    <div id="question-pages">
+      <!-- Questions will be inserted by JavaScript -->
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+      <button class="btn btn-secondary" id="prev-btn" onclick="prevQuestion()" disabled>Föregående</button>
+      <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()">Nästa</button>
+    </div>
+
+    <!-- Result page -->
+    <div class="result-page" id="result-page">
+      <div class="header">
+        <h1 id="result-title">Ditt resultat</h1>
+        <p id="result-subtitle">KEDS – Karolinska Exhaustion Disorder Scale</p>
+      </div>
+
+      <div class="result-score" id="result-score">0</div>
+
+      <div class="result-level" id="result-level">-</div>
+
+      <div class="result-advice" id="result-advice">
+        <h3 id="advice-title">Tolkning</h3>
+        <p id="advice-text"></p>
+      </div>
+
+      <div class="gdpr-notice">
+        <strong>🔒</strong> <span id="gdpr-text-result">Ingen data sparas på servern. Dina svar lagras endast lokalt i din webbläsare under testets gång och raderas när du stänger fliken.</span>
+      </div>
+
+      <div class="info-section">
+        <h3 id="info-title">Om KEDS</h3>
+        <p id="info-text"></p>
+      </div>
+
+      <button class="btn btn-primary" onclick="restartTest()" id="restart-btn">Gör testet igen</button>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p id="footer-text">KEDS är utvecklat av Karolinska Institutet. Detta test är endast för självskattning.</p>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // LANGUAGE DATA - NUMMERERADE SVAR
+    // ============================================
+
+    const languages = {
+      sv: {
+        title: "KEDS – Karolinska Exhaustion Disorder Scale",
+        subtitle: "Självskattningstest för utmattningssyndrom",
+        next: "Nästa",
+        prev: "Föregående",
+        finish: "Visa resultat",
+        resultTitle: "Ditt resultat",
+        resultSubtitle: "KEDS – Karolinska Exhaustion Disorder Scale",
+        scoreLabel: "Poäng",
+        riskLow: "Låg risk",
+        riskHigh: "Ökad risk",
+        adviceTitle: "Tolkning",
+        adviceLow: "Ditt resultat visar på låg risk för utmattningssyndrom. Fortsätt att ta hand om din hälsa och lyssna på din kropp.",
+        adviceHigh: "Ditt resultat visar på ökad risk för utmattningssyndrom. Det är viktigt att ta detta på allvar och vidta åtgärder för återhämtning. Kontakta vården om symtomen påverkar din vardag.",
+        infoTitle: "Om KEDS",
+        infoText: "KEDS (Karolinska Exhaustion Disorder Scale) är ett självskattningstest utvecklat av Karolinska Institutet. Testet mäter symtom som kan uppstå vid långvarig stress. Resultatet ska inte användas för diagnos, utan som ett verktyg för självreflektion. Vid oro, kontakta vården.",
+        footerText: "KEDS är utvecklat av Karolinska Institutet. Detta test är endast för självskattning.",
+        gdprText: "Ingen data sparas på servern. Dina svar lagras endast lokalt i din webbläsare under testets gång och raderas när du stänger fliken.",
+        questions: [
+          {
+            id: 1,
+            title: "1. Koncentrationsförmåga",
+            text: "Här ber vi dig ta ställning till din förmåga att hålla tankarna samlade och koncentrera dig. Tänk igenom hur du fungerar vid olika sysslor som kräver olika grad av koncentrationsförmåga, t.ex. läsning av komplicerad text, lätt tidningstext och TV-tittande.",
+            options: [
+              "0. Jag har inte svårt att koncentrera mig utan läser, tittar på TV och för samtal som vanligt.",
+              "1. ",
+              "2. Jag har ibland svårt att hålla tankarna samlade på sådant som normalt skulle fåga min uppmärksamhet.",
+              "3. ",
+              "4. Jag har ofta svårt att koncentrera mig.",
+              "5. ",
+              "6. Jag kan överhuvudtaget inte koncentrera mig på någonting."
+            ]
+          },
+          {
+            id: 2,
+            title: "2. Minne",
+            text: "Här ber vi dig beskriva din förmåga att komma ihåg saker. Tänk efter om du har svårt att komma ihåg namn, datum eller vardagliga ärenden.",
+            options: [
+              "0. Jag kommer ihåg namn, datum och ärenden jag ska göra.",
+              "1. ",
+              "2. Det händer att jag glömmer bort sådant som inte är så viktigt men om jag skärper mig minns jag för det mesta.",
+              "3. ",
+              "4. Jag glömmer ofta bort möten eller namnen på personer som jag känner mycket väl.",
+              "5. ",
+              "6. Jag glömmer dagligen bort betydelsefulla saker eller saker som jag skulle gjort."
+            ]
+          },
+          {
+            id: 3,
+            title: "3. Kroppslig uttröttbarhet",
+            text: "Frågan gäller hur du har det med din fysiska ork. Känner du dig t.ex. mer fysiskt trött än vanligt efter vardagliga sysslor eller någon form av kroppsansträngning?",
+            options: [
+              "0. Jag känner mig som vanligt och utför fysiska aktiviteter som ingår i vardagen eller tränar som jag brukar.",
+              "1. ",
+              "2. Jag känner att fysiska ansträngningar är mer tröttande än normalt men rör mig ändå som vanligt i det avseendet.",
+              "3. ",
+              "4. Jag har svårt att orka med kroppsansträngning. Det fungerar så länge jag rör mig i normal takt men jag klarar inte att öka takten utan att bli darrig och andfådd.",
+              "5. ",
+              "6. Jag känner mig mycket svag och orkar inte ens att röra mig kortare sträckor."
+            ]
+          },
+          {
+            id: 4,
+            title: "4. Uthållighet",
+            text: "Här vill vi att du tänker efter hur din uthållighet är och om du blir lättare psykiskt trött än vanligt i olika vardagliga situationer.",
+            options: [
+              "0. Jag har lika mycket energi som vanligt. Jag har inga särskilda svårigheter att genomföra mina vardagliga sysslor.",
+              "1. ",
+              "2. Jag klarar av att genomföra vardagliga sysslor men det går åt mer energi och jag blir fortare trött än vanligt. Jag behöver ta pauser oftare än vanligt.",
+              "3. ",
+              "4. Jag blir onormalt trött av att försöka utföra mina vardagssysslor och umgänge med andra människor tröttar ut mig.",
+              "5. ",
+              "6. Jag orkar inte göra någonting."
+            ]
+          },
+          {
+            id: 5,
+            title: "5. Återhämtningsförmåga",
+            text: "Här ber vi dig beskriva hur väl och hur snabbt du återhämtar dig psykiskt och fysiskt när du har blivit uttröttad.",
+            options: [
+              "0. Jag behöver inte vila under dagen.",
+              "1. ",
+              "2. Jag blir trött under dagen men det räcker med en liten paus för att jag ska återhämta mig.",
+              "3. ",
+              "4. Jag blir trött under dagen och behöver långa pauser för att bli piggare.",
+              "5. ",
+              "6. Det spelar ingen roll hur mycket jag vilar, det är som om jag inte kan ladda om mina batterier."
+            ]
+          },
+          {
+            id: 6,
+            title: "6. Sömn",
+            text: "Här ber vi dig beskriva hur du sover. Tänk efter hur god sömnen varit och/eller om du känt dig utsövd under de senaste två veckorna. Bedömningen skall avse hur du faktiskt sovit, oavsett om du tagit sömnmedel eller ej.",
+            options: [
+              "0. Jag sover gott och tillräckligt länge för mina behov och känner mig för det mesta utvilad när jag vaknar.",
+              "1. ",
+              "2. Ibland sover jag oroligare eller vaknar under natten och har svårt att somna om. Det händer att jag inte känner mig utsövd efter en natts sömn.",
+              "3. ",
+              "4. Jag sover ofta oroligt eller vaknar under natten och har svårt att somna om. Det händer ofta att jag inte känner mig utsövd efter en natts sömn.",
+              "5. ",
+              "6. Jag sover oroligt eller vaknar varje natt och har svårigheter att somna om. Jag känner mig aldrig utvilad eller utsövd när jag vaknar."
+            ]
+          },
+          {
+            id: 7,
+            title: "7. Överkänslighet för sinnesintryck",
+            text: "Frågan gäller om du tycker att något eller några av dina sinnen blivit mer känsliga för intryck. T.ex. ljud, ljus, dofter eller beröring.",
+            options: [
+              "0. Jag tycker inte att mina sinnen är känsligare än vanligt.",
+              "1. ",
+              "2. Det händer att ljud, ljus eller andra sinnesintryck känns obehagliga.",
+              "3. ",
+              "4. Jag upplever ofta ljud, ljus eller andra sinnesintryck som störande eller obehagliga.",
+              "5. ",
+              "6. Ljud, ljus eller andra sinnesintryck stör mig så mycket att jag drar mig undan för att mina sinnen ska få vila."
+            ]
+          },
+          {
+            id: 8,
+            title: "8. Upplevelsen av krav",
+            text: "Här ber vi dig ta ställning till hur du reagerar på krav som du upplever ställs på dig i vardagen. Kraven kan komma från omgivningen eller dig själv.",
+            options: [
+              "0. Jag gör det jag ska eller vill göra utan att uppleva det som särskilt krävande eller besvärligt.",
+              "1. ",
+              "2. Vardagliga situationer som jag tidigare hanterat utan särskilda problem kan ibland kännas krävande och orsaka obehag eller få mig att bli lättare stressad än vanligt.",
+              "3. ",
+              "4. Situationer som jag tidigare hanterat utan problem känns nu ofta krävande och orsakar ett starkt obehag eller en stark stress.",
+              "5. ",
+              "6. Det mesta känns krävande och jag klarar inte av att hantera det överhuvudtaget."
+            ]
+          },
+          {
+            id: 9,
+            title: "9. Irritation och ilska",
+            text: "Frågan gäller hur lättirriterad eller arg du känner dig inombords oavsett om du visat något utåt eller ej. Om du överhuvudtaget inte kan känna några sådana känslor, skall du sätta din markering vid 0.",
+            options: [
+              "0. Jag känner mig inte särskilt lättirriterad.",
+              "1. ",
+              "2. Jag känner mig mer otålig eller lättirriterad än vanligt men det går också snabbt över.",
+              "3. ",
+              "4. Jag blir lättare arg eller provocerad än vanligt. Ibland förlorar jag fattningen på ett sätt som inte är normalt för mig.",
+              "5. ",
+              "6. Jag känner mig ofta alldeles rasande invärtes och måste anstränga mig till det yttersta för att behärska mig."
+            ]
+          }
+        ]
+      },
+      en: {
+        title: "KEDS – Karolinska Exhaustion Disorder Scale",
+        subtitle: "Self-assessment test for exhaustion disorder",
+        next: "Next",
+        prev: "Previous",
+        finish: "Show result",
+        resultTitle: "Your result",
+        resultSubtitle: "KEDS – Karolinska Exhaustion Disorder Scale",
+        scoreLabel: "Score",
+        riskLow: "Low risk",
+        riskHigh: "Increased risk",
+        adviceTitle: "Interpretation",
+        adviceLow: "Your result indicates a low risk of exhaustion disorder. Continue to take care of your health and listen to your body.",
+        adviceHigh: "Your result indicates an increased risk of exhaustion disorder. It is important to take this seriously and take action for recovery. Contact healthcare if symptoms affect your daily life.",
+        infoTitle: "About KEDS",
+        infoText: "KEDS (Karolinska Exhaustion Disorder Scale) is a self-assessment test developed by Karolinska Institutet. The test measures symptoms that can occur with prolonged stress. The result should not be used for diagnosis, but as a tool for self-reflection. If you are worried, contact healthcare.",
+        footerText: "KEDS was developed by Karolinska Institutet. This test is for self-assessment only.",
+        gdprText: "No data is stored on the server. Your answers are only stored locally in your browser during the test and are deleted when you close the tab.",
+        questions: [
+          {
+            id: 1,
+            title: "1. Concentration ability",
+            text: "Here we ask you to consider your ability to keep your thoughts focused and concentrate. Think about how you function in various tasks that require different levels of concentration, e.g., reading complex text, reading light newspaper text, and watching TV.",
+            options: [
+              "0. I have no difficulty concentrating; I read, watch TV, and have conversations as usual.",
+              "1. ",
+              "2. I sometimes have difficulty keeping my thoughts focused on things that would normally require my attention.",
+              "3. ",
+              "4. I often have difficulty concentrating.",
+              "5. ",
+              "6. I cannot concentrate on anything at all."
+            ]
+          },
+          {
+            id: 2,
+            title: "2. Memory",
+            text: "Here we ask you to describe your ability to remember things. Think about whether you have difficulty remembering names, dates, or everyday tasks.",
+            options: [
+              "0. I remember names, dates, and tasks I need to do.",
+              "1. ",
+              "2. Sometimes I forget unimportant things, but if I focus, I remember most things.",
+              "3. ",
+              "4. I often forget meetings or the names of people I know very well.",
+              "5. ",
+              "6. I daily forget important things or tasks I was supposed to do."
+            ]
+          },
+          {
+            id: 3,
+            title: "3. Physical exhaustibility",
+            text: "This question concerns your physical energy. Do you feel, for example, more physically tired than usual after daily tasks or physical exertion?",
+            options: [
+              "0. I feel as usual and perform physical activities that are part of daily life or exercise as I normally do.",
+              "1. ",
+              "2. I feel that physical exertion is more tiring than usual, but I still move around as usual.",
+              "3. ",
+              "4. I have difficulty managing physical exertion. It works as long as I maintain a normal pace, but I cannot increase the pace without becoming shaky and out of breath.",
+              "5. ",
+              "6. I feel very weak and cannot even move short distances."
+            ]
+          },
+          {
+            id: 4,
+            title: "4. Endurance",
+            text: "Here we want you to think about your endurance and whether you get mentally tired more easily than usual in various everyday situations.",
+            options: [
+              "0. I have as much energy as usual. I have no particular difficulty performing my daily tasks.",
+              "1. ",
+              "2. I can perform daily tasks, but it takes more energy and I get tired more quickly than usual. I need to take breaks more often.",
+              "3. ",
+              "4. I get abnormally tired from trying to perform my daily tasks, and socializing with others exhausts me.",
+              "5. ",
+              "6. I cannot do anything at all."
+            ]
+          },
+          {
+            id: 5,
+            title: "5. Recovery ability",
+            text: "Here we ask you to describe how well and how quickly you recover mentally and physically when you have been exhausted.",
+            options: [
+              "0. I do not need to rest during the day.",
+              "1. ",
+              "2. I get tired during the day, but a short break is enough for me to recover.",
+              "3. ",
+              "4. I get tired during the day and need long breaks to feel refreshed.",
+              "5. ",
+              "6. No matter how much I rest, it feels like I cannot recharge my batteries."
+            ]
+          },
+          {
+            id: 6,
+            title: "6. Sleep",
+            text: "Here we ask you to describe how you sleep. Think about the quality of your sleep and/or whether you have felt rested over the past two weeks.",
+            options: [
+              "0. I sleep well and long enough for my needs and usually feel rested when I wake up.",
+              "1. ",
+              "2. Sometimes I sleep restlessly or wake up during the night and have difficulty falling back asleep. Sometimes I do not feel rested after a night's sleep.",
+              "3. ",
+              "4. I often sleep restlessly or wake up during the night and have difficulty falling back asleep. I often do not feel rested after a night's sleep.",
+              "5. ",
+              "6. I sleep restlessly or wake up every night and have difficulty falling back asleep. I never feel rested or refreshed when I wake up."
+            ]
+          },
+          {
+            id: 7,
+            title: "7. Sensitivity to sensory impressions",
+            text: "This question concerns whether you feel that one or more of your senses have become more sensitive to impressions, e.g., sound, light, smells, or touch.",
+            options: [
+              "0. I do not think my senses are more sensitive than usual.",
+              "1. ",
+              "2. Sometimes sound, light, or other sensory impressions feel unpleasant.",
+              "3. ",
+              "4. I often experience sound, light, or other sensory impressions as disturbing or unpleasant.",
+              "5. ",
+              "6. Sound, light, or other sensory impressions bother me so much that I withdraw to give my senses a rest."
+            ]
+          },
+          {
+            id: 8,
+            title: "8. Perception of demands",
+            text: "Here we ask you to consider how you react to demands that you feel are placed on you in everyday life. These demands can come from your environment or yourself.",
+            options: [
+              "0. I do what I should or want to do without feeling that it is particularly demanding or troublesome.",
+              "1. ",
+              "2. Everyday situations that I previously handled without particular problems can sometimes feel demanding and cause discomfort or make me feel more stressed than usual.",
+              "3. ",
+              "4. Situations that I previously handled without problems now often feel demanding and cause strong discomfort or stress.",
+              "5. ",
+              "6. Almost everything feels demanding and I cannot handle it at all."
+            ]
+          },
+          {
+            id: 9,
+            title: "9. Irritation and anger",
+            text: "This question concerns how easily irritated or angry you feel inside, regardless of whether you show it outwardly or not. If you cannot feel these emotions at all, you should mark 0.",
+            options: [
+              "0. I do not feel particularly irritable.",
+              "1. ",
+              "2. I feel more impatient or irritable than usual, but it also passes quickly.",
+              "3. ",
+              "4. I get angry or provoked more easily than usual. Sometimes I lose my temper in a way that is not normal for me.",
+              "5. ",
+              "6. I often feel utterly enraged inside and must exert myself to the utmost to control myself."
+            ]
+          }
+        ]
+      }
+    };
+
+    // ============================================
+    // STATE
+    // ============================================
+
+    let currentLanguage = "sv";
+    let currentQuestionIndex = 0;
+    let answers = Array(9).fill(null);
+    let questionsRendered = false;
+
+    // ============================================
+    // DOM ELEMENTS
+    // ============================================
+
+    const titleEl = document.getElementById("title");
+    const subtitleEl = document.getElementById("subtitle");
+    const progressFillEl = document.getElementById("progress-fill");
+    const progressTextEl = document.getElementById("progress-text");
+    const questionPagesEl = document.getElementById("question-pages");
+    const prevBtn = document.getElementById("prev-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const resultPageEl = document.getElementById("result-page");
+    const resultScoreEl = document.getElementById("result-score");
+    const resultLevelEl = document.getElementById("result-level");
+    const adviceTextEl = document.getElementById("advice-text");
+    const adviceTitleEl = document.getElementById("advice-title");
+    const infoTitleEl = document.getElementById("info-title");
+    const infoTextEl = document.getElementById("info-text");
+    const footerTextEl = document.getElementById("footer-text");
+    const resultTitleEl = document.getElementById("result-title");
+    const resultSubtitleEl = document.getElementById("result-subtitle");
+    const gdprTextEl = document.getElementById("gdpr-text");
+    const gdprTextResultEl = document.getElementById("gdpr-text-result");
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+
+    // Detect browser language
+    function detectLanguage() {
+      const browserLang = navigator.language || navigator.userLanguage;
+      return browserLang.startsWith("sv") ? "sv" : "en";
+    }
+
+    // Initialize
+    function init() {
+      currentLanguage = detectLanguage();
+      renderQuestions();
+      updateUI();
+      updateNextButtonState();
+      questionsRendered = true;
+    }
+
+    // ============================================
+    // RENDER QUESTIONS
+    // ============================================
+
+    function renderQuestions() {
+      const lang = languages[currentLanguage];
+      questionPagesEl.innerHTML = "";
+
+      lang.questions.forEach((question, index) => {
+        const questionEl = document.createElement("div");
+        questionEl.className = `question-container ${index === 0 ? "active" : ""}`;
+        questionEl.id = `question-${index}`;
+
+        // Build answer options HTML with numbers
+        const optionsHTML = question.options.map((option, optionIndex) => {
+          if (option === "") {
+            return '';
+          }
+          return `
+            <label class="answer-option ${answers[index] === optionIndex ? 'selected' : ''}" 
+                   for="q${index}-text-${optionIndex}">
+              <input type="radio" 
+                     id="q${index}-text-${optionIndex}" 
+                     name="question-${index}" 
+                     value="${optionIndex}" 
+                     onchange="selectAnswer(${index}, ${optionIndex})"
+                     ${answers[index] === optionIndex ? 'checked' : ''}>
+              <span class="answer-number">${optionIndex}</span>
+              <span>${option.replace(/^\d+\. /, '')}</span>
+            </label>
+          `;
+        }).join("");
+
+        questionEl.innerHTML = `
+          <div class="question-title">${question.title}</div>
+          <div class="question-text">${question.text}</div>
+          <div class="answer-options">
+            ${optionsHTML}
+          </div>
+        `;
+
+        questionPagesEl.appendChild(questionEl);
+      });
+    }
+
+    // ============================================
+    // NAVIGATION
+    // ============================================
+
+    function showQuestion(index) {
+      // Hide all questions
+      document.querySelectorAll(".question-container").forEach(el => {
+        el.classList.remove("active");
+      });
+
+      // Show current question
+      const currentQuestionEl = document.getElementById(`question-${index}`);
+      if (currentQuestionEl) {
+        currentQuestionEl.classList.add("active");
+        
+        // Update selected state for text options
+        const textOptions = currentQuestionEl.querySelectorAll('.answer-option');
+        textOptions.forEach((opt, optIndex) => {
+          const input = opt.querySelector('input');
+          if (input && answers[index] === parseInt(input.value)) {
+            opt.classList.add('selected');
+          } else {
+            opt.classList.remove('selected');
+          }
+        });
+      }
+
+      currentQuestionIndex = index;
+      updateUI();
+      updateNextButtonState();
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < 8) {
+        showQuestion(currentQuestionIndex + 1);
+      } else {
+        showResult();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        showQuestion(currentQuestionIndex - 1);
+      }
+    }
+
+    function selectAnswer(questionIndex, value) {
+      answers[questionIndex] = value;
+      
+      // Update selected state for current question
+      const currentQuestionEl = document.getElementById(`question-${questionIndex}`);
+      if (currentQuestionEl) {
+        // Update text options
+        const textOptions = currentQuestionEl.querySelectorAll('.answer-option');
+        textOptions.forEach((opt, optIndex) => {
+          const input = opt.querySelector('input');
+          if (input && parseInt(input.value) === value) {
+            opt.classList.add('selected');
+          } else {
+            opt.classList.remove('selected');
+          }
+        });
+      }
+      
+      updateNextButtonState();
+      
+      // Auto-advance if not on last question
+      if (questionIndex < 8) {
+        setTimeout(() => {
+          showQuestion(questionIndex + 1);
+        }, 200);
+      }
+    }
+
+    // ============================================
+    // NEXT BUTTON STATE
+    // ============================================
+
+    function updateNextButtonState() {
+      const currentAnswer = answers[currentQuestionIndex];
+      
+      if (currentQuestionIndex < 8) {
+        // Disable next button if no answer selected for current question
+        nextBtn.disabled = currentAnswer === null;
+      } else {
+        // For last question, allow showing result even if no answer
+        nextBtn.disabled = false;
+      }
+    }
+
+    // ============================================
+    // RESULT
+    // ============================================
+
+    function calculateScore() {
+      return answers.reduce((sum, answer) => {
+        return sum + (answer !== null ? answer : 0);
+      }, 0);
+    }
+
+    function showResult() {
+      const score = calculateScore();
+      const lang = languages[currentLanguage];
+
+      // Update result page
+      resultScoreEl.textContent = score;
+      
+      // Determine risk level
+      const isHighRisk = score >= 19;
+      resultLevelEl.textContent = isHighRisk ? lang.riskHigh : lang.riskLow;
+      resultLevelEl.className = `result-level ${isHighRisk ? "high" : "low"}`;
+      
+      adviceTitleEl.textContent = lang.adviceTitle;
+      adviceTextEl.textContent = isHighRisk ? lang.adviceHigh : lang.adviceLow;
+      
+      resultTitleEl.textContent = lang.resultTitle;
+      resultSubtitleEl.textContent = lang.resultSubtitle;
+      infoTitleEl.textContent = lang.infoTitle;
+      infoTextEl.textContent = lang.infoText;
+      footerTextEl.textContent = lang.footerText;
+      gdprTextEl.textContent = lang.gdprText;
+      gdprTextResultEl.textContent = lang.gdprText;
+
+      // Hide questions
+      questionPagesEl.style.display = "none";
+      document.querySelector(".navigation").style.display = "none";
+      document.querySelector(".progress-container").style.display = "none";
+
+      // Show result
+      resultPageEl.classList.add("active");
+    }
+
+    function restartTest() {
+      currentQuestionIndex = 0;
+      answers = Array(9).fill(null);
+
+      // Show first question
+      questionPagesEl.style.display = "block";
+      document.querySelector(".navigation").style.display = "flex";
+      document.querySelector(".progress-container").style.display = "block";
+      resultPageEl.classList.remove("active");
+
+      renderQuestions();
+      showQuestion(0);
+    }
+
+    // ============================================
+    // LANGUAGE
+    // ============================================
+
+    function toggleLanguage() {
+      currentLanguage = currentLanguage === "sv" ? "en" : "sv";
+      updateUI();
+      
+      // If on result page, update it
+      if (resultPageEl.classList.contains("active")) {
+        showResult();
+      } else {
+        renderQuestions();
+        showQuestion(currentQuestionIndex);
+      }
+    }
+
+    // ============================================
+    // UI UPDATES
+    // ============================================
+
+    function updateUI() {
+      const lang = languages[currentLanguage];
+      const totalQuestions = 9;
+      const progressPercent = ((currentQuestionIndex) / totalQuestions) * 100;
+
+      // Update header
+      titleEl.textContent = lang.title;
+      subtitleEl.textContent = lang.subtitle;
+
+      // Update progress
+      progressFillEl.style.width = `${progressPercent}%`;
+      progressTextEl.textContent = `Fråga ${currentQuestionIndex + 1} av ${totalQuestions}`;
+
+      // Update buttons
+      prevBtn.textContent = lang.prev;
+      prevBtn.disabled = currentQuestionIndex === 0;
+
+      if (currentQuestionIndex < 8) {
+        nextBtn.textContent = lang.next;
+      } else {
+        nextBtn.textContent = lang.finish || lang.next;
+      }
+
+      // Update GDPR text
+      gdprTextEl.textContent = lang.gdprText;
+      
+      // Update footer
+      footerTextEl.textContent = lang.footerText;
+    }
+
+    // ============================================
+    // KEYBOARD NAVIGATION
+    // ============================================
+
+    document.addEventListener("keydown", (e) => {
+      // Next question with Enter or Right Arrow (only if answer selected or last question)
+      if ((e.key === "Enter" || e.key === "ArrowRight")) {
+        if (currentQuestionIndex < 8 && answers[currentQuestionIndex] !== null) {
+          e.preventDefault();
+          nextQuestion();
+        } else if (currentQuestionIndex === 8) {
+          e.preventDefault();
+          nextQuestion();
+        }
+      }
+      // Previous question with Left Arrow
+      else if (e.key === "ArrowLeft" && currentQuestionIndex > 0) {
+        e.preventDefault();
+        prevQuestion();
+      }
+      // Select answer with number keys (0-6)
+      else if (e.key >= "0" && e.key <= "6") {
+        const value = parseInt(e.key);
+        selectAnswer(currentQuestionIndex, value);
+      }
+    });
+
+    // ============================================
+    // START
+    // ============================================
+
+    // Initialize when DOM is loaded
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>
