@@ -325,6 +325,53 @@
       margin-bottom: 10px;
     }
 
+
+    /* Research links section */
+    .research-section {
+      margin-top: 25px;
+      padding: 15px;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 8px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .research-section h4 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+
+    .research-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+
+    .research-links a {
+      color: var(--secondary-color);
+      text-decoration: none;
+      padding: 5px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .research-links a:hover {
+      background-color: rgba(52, 152, 219, 0.1);
+      border-color: var(--secondary-color);
+    }
+
+    .copyright-section {
+      margin-top: 15px;
+      padding: 10px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #666;
+      border-top: 1px solid var(--border-color);
+    }
+
     /* Footer */
     .footer {
       text-align: center;
@@ -470,7 +517,20 @@
       <button class="btn btn-primary" onclick="restartTest()" id="restart-btn">Gör testet igen</button>
     </div>
 
-    <!-- Footer -->
+        <!-- Research Links Section -->
+    <div class="research-section">
+      <h4 id="research-title">Forskning & Referenser</h4>
+      <div class="research-links" id="research-links">
+        <!-- Links will be inserted by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Copyright Section -->
+    <div class="copyright-section" id="copyright-section">
+      <p id="copyright-text"></p>
+    </div>
+
+<!-- Footer -->
     <div class="footer">
       <p id="footer-text">KEDS är utvecklat av Karolinska Institutet. Detta test är endast för självskattning.</p>
     </div>
@@ -480,6 +540,29 @@
     // ============================================
     // LANGUAGE DATA - NUMMERERADE SVAR
     // ============================================
+    // Research links data
+    const researchLinks = {
+      sv: [
+        { text: "Original KEDS-9 (PDF)", url: "https://viss.nu/download/18.d9ec095172e6db9637bec4c/1610115190216/KEDS-9-sv-ny.pdf" },
+        { text: "Forskning om KEDS", url: "https://www.carlbring.se/fbanken/keds/" },
+        { text: "Karolinska Institutet", url: "https://ki.se" },
+        { text: "Om utmattningssyndrom (1177)", url: "https://www.1177.se/" }
+      ],
+      en: [
+        { text: "Original KEDS-9 (PDF)", url: "https://viss.nu/download/18.d9ec095172e6db9637bec4c/1610115190216/KEDS-9-sv-ny.pdf" },
+        { text: "KEDS Research", url: "https://www.carlbring.se/fbanken/keds/" },
+        { text: "Karolinska Institutet", url: "https://ki.se" },
+        { text: "About Exhaustion Disorder", url: "https://www.mbdolor.com/karolinska-exhaustion-disorder-scale/" }
+      ]
+    };
+
+    // Copyright texts
+    const copyrightTexts = {
+      sv: "© 2026 KEDS-applikation av Fredrik Arvas. KEDS-testet är utvecklat av Karolinska Institutet. Allt material skyddas av upphovsrätt.",
+      en: "© 2026 KEDS Application by Fredrik Arvas. The KEDS test was developed by Karolinska Institutet. All material is copyright protected."
+    };
+
+
 
     const languages = {
       sv: {
@@ -496,6 +579,7 @@
         adviceTitle: "Tolkning",
         adviceLow: "Ditt resultat visar på låg risk för utmattningssyndrom. Fortsätt att ta hand om din hälsa och lyssna på din kropp.",
         adviceHigh: "Ditt resultat visar på ökad risk för utmattningssyndrom. Det är viktigt att ta detta på allvar och vidta åtgärder för återhämtning. Kontakta vården om symtomen påverkar din vardag.",
+        researchTitle: "Forskning & Referenser",
         infoTitle: "Om KEDS",
         infoText: "KEDS (Karolinska Exhaustion Disorder Scale) är ett självskattningstest utvecklat av Karolinska Institutet. Testet mäter symtom som kan uppstå vid långvarig stress. Resultatet ska inte användas för diagnos, utan som ett verktyg för självreflektion. Vid oro, kontakta vården.",
         footerText: "KEDS är utvecklat av Karolinska Institutet. Detta test är endast för självskattning.",
@@ -643,6 +727,7 @@
         adviceTitle: "Interpretation",
         adviceLow: "Your result indicates a low risk of exhaustion disorder. Continue to take care of your health and listen to your body.",
         adviceHigh: "Your result indicates an increased risk of exhaustion disorder. It is important to take this seriously and take action for recovery. Contact healthcare if symptoms affect your daily life.",
+        researchTitle: "Research & References",
         infoTitle: "About KEDS",
         infoText: "KEDS (Karolinska Exhaustion Disorder Scale) is a self-assessment test developed by Karolinska Institutet. The test measures symptoms that can occur with prolonged stress. The result should not be used for diagnosis, but as a tool for self-reflection. If you are worried, contact healthcare.",
         footerText: "KEDS was developed by Karolinska Institutet. This test is for self-assessment only.",
@@ -808,6 +893,9 @@
     const footerTextEl = document.getElementById("footer-text");
     const resultTitleEl = document.getElementById("result-title");
     const resultSubtitleEl = document.getElementById("result-subtitle");
+    const researchTitleEl = document.getElementById("research-title");
+    const researchLinksEl = document.getElementById("research-links");
+    const copyrightEl = document.getElementById("copyright-text");
     const gdprTextEl = document.getElementById("gdpr-text");
     const gdprTextResultEl = document.getElementById("gdpr-text-result");
 
@@ -827,6 +915,7 @@
       renderQuestions();
       updateUI();
       updateNextButtonState();
+      renderResearchLinks();
       questionsRendered = true;
     }
 
