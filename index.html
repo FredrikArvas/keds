@@ -144,15 +144,51 @@
       color: var(--text-color);
     }
 
-    /* Scale description */
-    .scale-description {
+    /* Answer options - TEXT VERSION */
+    .answer-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
       margin-bottom: 15px;
-      font-size: 0.9rem;
-      color: #666;
-      text-align: center;
     }
 
-    /* Answer scale - NY VERSION (bara siffror) */
+    .answer-option {
+      display: flex;
+      align-items: flex-start;
+      padding: 15px;
+      background-color: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .answer-option:hover {
+      border-color: var(--secondary-color);
+      background-color: rgba(52, 152, 219, 0.05);
+    }
+
+    .answer-option.selected {
+      border-color: var(--secondary-color);
+      background-color: rgba(52, 152, 219, 0.1);
+    }
+
+    .answer-option input[type="radio"] {
+      margin-right: 12px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      margin-top: 2px;
+    }
+
+    .answer-option label {
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: var(--text-color);
+      flex: 1;
+    }
+
+    /* Scale - NUMBERS ONLY */
     .answer-scale {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -217,6 +253,21 @@
       flex: 1;
     }
 
+    /* GDPR notice */
+    .gdpr-notice {
+      background-color: rgba(52, 152, 219, 0.05);
+      border-left: 4px solid var(--secondary-color);
+      padding: 12px 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    .gdpr-notice strong {
+      color: var(--primary-color);
+    }
+
     /* Navigation buttons */
     .navigation {
       display: flex;
@@ -239,8 +290,14 @@
       color: var(--button-text);
     }
 
-    .btn-primary:hover {
+    .btn-primary:hover:not(:disabled) {
       background-color: var(--button-hover);
+    }
+
+    .btn-primary:disabled {
+      background-color: #bdc3c7;
+      cursor: not-allowed;
+      opacity: 0.6;
     }
 
     .btn-secondary {
@@ -404,6 +461,11 @@
       .result-level {
         font-size: 1.2rem;
       }
+
+      .gdpr-notice {
+        font-size: 0.8rem;
+        padding: 10px;
+      }
     }
 
     /* Print styles */
@@ -434,6 +496,11 @@
     <div class="header">
       <h1 id="title">KEDS – Karolinska Exhaustion Disorder Scale</h1>
       <p id="subtitle">Självskattningstest för utmattningssyndrom</p>
+    </div>
+
+    <!-- GDPR Notice -->
+    <div class="gdpr-notice">
+      <strong>🔒</strong> <span id="gdpr-text">Ingen data sparas på servern. Dina svar lagras endast lokalt i din webbläsare under testets gång och raderas när du stänger fliken.</span>
     </div>
 
     <!-- Progress bar -->
@@ -482,6 +549,10 @@
         <p id="advice-text"></p>
       </div>
 
+      <div class="gdpr-notice">
+        <strong>🔒</strong> <span id="gdpr-text-result">Ingen data sparas på servern. Dina svar lagras endast lokalt i din webbläsare under testets gång och raderas när du stänger fliken.</span>
+      </div>
+
       <div class="info-section">
         <h3 id="info-title">Om KEDS</h3>
         <p id="info-text"></p>
@@ -519,51 +590,133 @@
         infoTitle: "Om KEDS",
         infoText: "KEDS (Karolinska Exhaustion Disorder Scale) är ett självskattningstest utvecklat av Karolinska Institutet. Testet mäter symtom som kan uppstå vid långvarig stress. Resultatet ska inte användas för diagnos, utan som ett verktyg för självreflektion. Vid oro, kontakta vården.",
         footerText: "KEDS är utvecklat av Karolinska Institutet. Detta test är endast för självskattning.",
+        gdprText: "Ingen data sparas på servern. Dina svar lagras endast lokalt i din webbläsare under testets gång och raderas när du stänger fliken.",
         questions: [
           {
             id: 1,
             title: "1. Koncentrationsförmåga",
-            text: "Här ber vi dig ta ställning till din förmåga att hålla tankarna samlade och koncentrera dig. Tänk igenom hur du fungerar vid olika sysslor som kräver olika grad av koncentrationsförmåga, t.ex. läsning av komplicerad text, lätt tidningstext och TV-tittande."
+            text: "Här ber vi dig ta ställning till din förmåga att hålla tankarna samlade och koncentrera dig. Tänk igenom hur du fungerar vid olika sysslor som kräver olika grad av koncentrationsförmåga, t.ex. läsning av komplicerad text, lätt tidningstext och TV-tittande.",
+            options: [
+              "Jag har inte svårt att koncentrera mig utan läser, tittar på TV och för samtal som vanligt.",
+              "",
+              "Jag har ibland svårt att hålla tankarna samlade på sådant som normalt skulle fåga min uppmärksamhet.",
+              "",
+              "Jag har ofta svårt att koncentrera mig.",
+              "",
+              "Jag kan överhuvudtaget inte koncentrera mig på någonting."
+            ]
           },
           {
             id: 2,
             title: "2. Minne",
-            text: "Här ber vi dig beskriva din förmåga att komma ihåg saker. Tänk efter om du har svårt att komma ihåg namn, datum eller vardagliga ärenden."
+            text: "Här ber vi dig beskriva din förmåga att komma ihåg saker. Tänk efter om du har svårt att komma ihåg namn, datum eller vardagliga ärenden.",
+            options: [
+              "Jag kommer ihåg namn, datum och ärenden jag ska göra.",
+              "",
+              "Det händer att jag glömmer bort sådant som inte är så viktigt men om jag skärper mig minns jag för det mesta.",
+              "",
+              "Jag glömmer ofta bort möten eller namnen på personer som jag känner mycket väl.",
+              "",
+              "Jag glömmer dagligen bort betydelsefulla saker eller saker som jag skulle gjort."
+            ]
           },
           {
             id: 3,
             title: "3. Kroppslig uttröttbarhet",
-            text: "Frågan gäller hur du har det med din fysiska ork. Känner du dig t.ex. mer fysiskt trött än vanligt efter vardagliga sysslor eller någon form av kroppsansträngning?"
+            text: "Frågan gäller hur du har det med din fysiska ork. Känner du dig t.ex. mer fysiskt trött än vanligt efter vardagliga sysslor eller någon form av kroppsansträngning?",
+            options: [
+              "Jag känner mig som vanligt och utför fysiska aktiviteter som ingår i vardagen eller tränar som jag brukar.",
+              "",
+              "Jag känner att fysiska ansträngningar är mer tröttande än normalt men rör mig ändå som vanligt i det avseendet.",
+              "",
+              "Jag har svårt att orka med kroppsansträngning. Det fungerar så länge jag rör mig i normal takt men jag klarar inte att öka takten utan att bli darrig och andfådd.",
+              "",
+              "Jag känner mig mycket svag och orkar inte ens att röra mig kortare sträckor."
+            ]
           },
           {
             id: 4,
             title: "4. Uthållighet",
-            text: "Här vill vi att du tänker efter hur din uthållighet är och om du blir lättare psykiskt trött än vanligt i olika vardagliga situationer."
+            text: "Här vill vi att du tänker efter hur din uthållighet är och om du blir lättare psykiskt trött än vanligt i olika vardagliga situationer.",
+            options: [
+              "Jag har lika mycket energi som vanligt. Jag har inga särskilda svårigheter att genomföra mina vardagliga sysslor.",
+              "",
+              "Jag klarar av att genomföra vardagliga sysslor men det går åt mer energi och jag blir fortare trött än vanligt. Jag behöver ta pauser oftare än vanligt.",
+              "",
+              "Jag blir onormalt trött av att försöka utföra mina vardagssysslor och umgänge med andra människor tröttar ut mig.",
+              "",
+              "Jag orkar inte göra någonting."
+            ]
           },
           {
             id: 5,
             title: "5. Återhämtningsförmåga",
-            text: "Här ber vi dig beskriva hur väl och hur snabbt du återhämtar dig psykiskt och fysiskt när du har blivit uttröttad."
+            text: "Här ber vi dig beskriva hur väl och hur snabbt du återhämtar dig psykiskt och fysiskt när du har blivit uttröttad.",
+            options: [
+              "Jag behöver inte vila under dagen.",
+              "",
+              "Jag blir trött under dagen men det räcker med en liten paus för att jag ska återhämta mig.",
+              "",
+              "Jag blir trött under dagen och behöver långa pauser för att bli piggare.",
+              "",
+              "Det spelar ingen roll hur mycket jag vilar, det är som om jag inte kan ladda om mina batterier."
+            ]
           },
           {
             id: 6,
             title: "6. Sömn",
-            text: "Här ber vi dig beskriva hur du sover. Tänk efter hur god sömnen varit och/eller om du känt dig utsövd under de senaste två veckorna."
+            text: "Här ber vi dig beskriva hur du sover. Tänk efter hur god sömnen varit och/eller om du känt dig utsövd under de senaste två veckorna. Bedömningen skall avse hur du faktiskt sovit, oavsett om du tagit sömnmedel eller ej.",
+            options: [
+              "Jag sover gott och tillräckligt länge för mina behov och känner mig för det mesta utvilad när jag vaknar.",
+              "",
+              "Ibland sover jag oroligare eller vaknar under natten och har svårt att somna om. Det händer att jag inte känner mig utsövd efter en natts sömn.",
+              "",
+              "Jag sover ofta oroligt eller vaknar under natten och har svårt att somna om. Det händer ofta att jag inte känner mig utsövd efter en natts sömn.",
+              "",
+              "Jag sover oroligt eller vaknar varje natt och har svårigheter att somna om. Jag känner mig aldrig utvilad eller utsövd när jag vaknar."
+            ]
           },
           {
             id: 7,
             title: "7. Överkänslighet för sinnesintryck",
-            text: "Frågan gäller om du tycker att något eller några av dina sinnen blivit mer känsliga för intryck. T.ex. ljud, ljus, dofter eller beröring."
+            text: "Frågan gäller om du tycker att något eller några av dina sinnen blivit mer känsliga för intryck. T.ex. ljud, ljus, dofter eller beröring.",
+            options: [
+              "Jag tycker inte att mina sinnen är känsligare än vanligt.",
+              "",
+              "Det händer att ljud, ljus eller andra sinnesintryck känns obehagliga.",
+              "",
+              "Jag upplever ofta ljud, ljus eller andra sinnesintryck som störande eller obehagliga.",
+              "",
+              "Ljud, ljus eller andra sinnesintryck stör mig så mycket att jag drar mig undan för att mina sinnen ska få vila."
+            ]
           },
           {
             id: 8,
             title: "8. Upplevelsen av krav",
-            text: "Här ber vi dig ta ställning till hur du reagerar på krav som du upplever ställs på dig i vardagen. Kraven kan komma från omgivningen eller dig själv."
+            text: "Här ber vi dig ta ställning till hur du reagerar på krav som du upplever ställs på dig i vardagen. Kraven kan komma från omgivningen eller dig själv.",
+            options: [
+              "Jag gör det jag ska eller vill göra utan att uppleva det som särskilt krävande eller besvärligt.",
+              "",
+              "Vardagliga situationer som jag tidigare hanterat utan särskilda problem kan ibland kännas krävande och orsaka obehag eller få mig att bli lättare stressad än vanligt.",
+              "",
+              "Situationer som jag tidigare hanterat utan problem känns nu ofta krävande och orsakar ett starkt obehag eller en stark stress.",
+              "",
+              "Det mesta känns krävande och jag klarar inte av att hantera det överhuvudtaget."
+            ]
           },
           {
             id: 9,
             title: "9. Irritation och ilska",
-            text: "Frågan gäller hur lättirriterad eller arg du känner dig inombords oavsett om du visat något utåt eller ej. Om du överhuvudtaget inte kan känna några sådana känslor, skall du sätta din markering vid 0."
+            text: "Frågan gäller hur lättirriterad eller arg du känner dig inombords oavsett om du visat något utåt eller ej. Tänk särskilt efter hur lättväckt din irritation varit (kort stubin), i förhållande till vad som utlöst den, och på hur ofta och hur intensivt du känt dig arg eller irriterad.",
+            options: [
+              "Jag känner mig inte särskilt lättirriterad.",
+              "",
+              "Jag känner mig mer otålig eller lättirriterad än vanligt men det går också snabbt över.",
+              "",
+              "Jag blir lättare arg eller provocerad än vanligt. Ibland förlorar jag fattningen på ett sätt som inte är normalt för mig.",
+              "",
+              "Jag känner mig ofta alldeles rasande invärtes och måste anstränga mig till det yttersta för att behärska mig."
+            ]
           }
         ]
       },
@@ -584,51 +737,133 @@
         infoTitle: "About KEDS",
         infoText: "KEDS (Karolinska Exhaustion Disorder Scale) is a self-assessment test developed by Karolinska Institutet. The test measures symptoms that can occur with prolonged stress. The result should not be used for diagnosis, but as a tool for self-reflection. If you are worried, contact healthcare.",
         footerText: "KEDS was developed by Karolinska Institutet. This test is for self-assessment only.",
+        gdprText: "No data is stored on the server. Your answers are only stored locally in your browser during the test and are deleted when you close the tab.",
         questions: [
           {
             id: 1,
             title: "1. Concentration ability",
-            text: "Here we ask you to consider your ability to keep your thoughts focused and concentrate. Think about how you function in various tasks that require different levels of concentration, e.g., reading complex text, reading light newspaper text, and watching TV."
+            text: "Here we ask you to consider your ability to keep your thoughts focused and concentrate. Think about how you function in various tasks that require different levels of concentration, e.g., reading complex text, reading light newspaper text, and watching TV.",
+            options: [
+              "I have no difficulty concentrating; I read, watch TV, and have conversations as usual.",
+              "",
+              "I sometimes have difficulty keeping my thoughts focused on things that would normally require my attention.",
+              "",
+              "I often have difficulty concentrating.",
+              "",
+              "I cannot concentrate on anything at all."
+            ]
           },
           {
             id: 2,
             title: "2. Memory",
-            text: "Here we ask you to describe your ability to remember things. Think about whether you have difficulty remembering names, dates, or everyday tasks."
+            text: "Here we ask you to describe your ability to remember things. Think about whether you have difficulty remembering names, dates, or everyday tasks.",
+            options: [
+              "I remember names, dates, and tasks I need to do.",
+              "",
+              "Sometimes I forget unimportant things, but if I focus, I remember most things.",
+              "",
+              "I often forget meetings or the names of people I know very well.",
+              "",
+              "I daily forget important things or tasks I was supposed to do."
+            ]
           },
           {
             id: 3,
             title: "3. Physical exhaustibility",
-            text: "This question concerns your physical energy. Do you feel, for example, more physically tired than usual after daily tasks or physical exertion?"
+            text: "This question concerns your physical energy. Do you feel, for example, more physically tired than usual after daily tasks or physical exertion?",
+            options: [
+              "I feel as usual and perform physical activities that are part of daily life or exercise as I normally do.",
+              "",
+              "I feel that physical exertion is more tiring than usual, but I still move around as usual.",
+              "",
+              "I have difficulty managing physical exertion. It works as long as I maintain a normal pace, but I cannot increase the pace without becoming shaky and out of breath.",
+              "",
+              "I feel very weak and cannot even move short distances."
+            ]
           },
           {
             id: 4,
             title: "4. Endurance",
-            text: "Here we want you to think about your endurance and whether you get mentally tired more easily than usual in various everyday situations."
+            text: "Here we want you to think about your endurance and whether you get mentally tired more easily than usual in various everyday situations.",
+            options: [
+              "I have as much energy as usual. I have no particular difficulty performing my daily tasks.",
+              "",
+              "I can perform daily tasks, but it takes more energy and I get tired more quickly than usual. I need to take breaks more often.",
+              "",
+              "I get abnormally tired from trying to perform my daily tasks, and socializing with others exhausts me.",
+              "",
+              "I cannot do anything at all."
+            ]
           },
           {
             id: 5,
             title: "5. Recovery ability",
-            text: "Here we ask you to describe how well and how quickly you recover mentally and physically when you have been exhausted."
+            text: "Here we ask you to describe how well and how quickly you recover mentally and physically when you have been exhausted.",
+            options: [
+              "I do not need to rest during the day.",
+              "",
+              "I get tired during the day, but a short break is enough for me to recover.",
+              "",
+              "I get tired during the day and need long breaks to feel refreshed.",
+              "",
+              "No matter how much I rest, it feels like I cannot recharge my batteries."
+            ]
           },
           {
             id: 6,
             title: "6. Sleep",
-            text: "Here we ask you to describe how you sleep. Think about the quality of your sleep and/or whether you have felt rested over the past two weeks."
+            text: "Here we ask you to describe how you sleep. Think about the quality of your sleep and/or whether you have felt rested over the past two weeks.",
+            options: [
+              "I sleep well and long enough for my needs and usually feel rested when I wake up.",
+              "",
+              "Sometimes I sleep restlessly or wake up during the night and have difficulty falling back asleep. Sometimes I do not feel rested after a night's sleep.",
+              "",
+              "I often sleep restlessly or wake up during the night and have difficulty falling back asleep. I often do not feel rested after a night's sleep.",
+              "",
+              "I sleep restlessly or wake up every night and have difficulty falling back asleep. I never feel rested or refreshed when I wake up."
+            ]
           },
           {
             id: 7,
             title: "7. Sensitivity to sensory impressions",
-            text: "This question concerns whether you feel that one or more of your senses have become more sensitive to impressions, e.g., sound, light, smells, or touch."
+            text: "This question concerns whether you feel that one or more of your senses have become more sensitive to impressions, e.g., sound, light, smells, or touch.",
+            options: [
+              "I do not think my senses are more sensitive than usual.",
+              "",
+              "Sometimes sound, light, or other sensory impressions feel unpleasant.",
+              "",
+              "I often experience sound, light, or other sensory impressions as disturbing or unpleasant.",
+              "",
+              "Sound, light, or other sensory impressions bother me so much that I withdraw to give my senses a rest."
+            ]
           },
           {
             id: 8,
             title: "8. Perception of demands",
-            text: "Here we ask you to consider how you react to demands that you feel are placed on you in everyday life. These demands can come from your environment or yourself."
+            text: "Here we ask you to consider how you react to demands that you feel are placed on you in everyday life. These demands can come from your environment or yourself.",
+            options: [
+              "I do what I should or want to do without feeling that it is particularly demanding or troublesome.",
+              "",
+              "Everyday situations that I previously handled without particular problems can sometimes feel demanding and cause discomfort or make me feel more stressed than usual.",
+              "",
+              "Situations that I previously handled without problems now often feel demanding and cause strong discomfort or stress.",
+              "",
+              "Almost everything feels demanding and I cannot handle it at all."
+            ]
           },
           {
             id: 9,
             title: "9. Irritation and anger",
-            text: "This question concerns how easily irritated or angry you feel inside, regardless of whether you show it outwardly or not. If you cannot feel these emotions at all, you should mark 0."
+            text: "This question concerns how easily irritated or angry you feel inside, regardless of whether you show it outwardly or not. If you cannot feel these emotions at all, you should mark 0.",
+            options: [
+              "I do not feel particularly irritable.",
+              "",
+              "I feel more impatient or irritable than usual, but it also passes quickly.",
+              "",
+              "I get angry or provoked more easily than usual. Sometimes I lose my temper in a way that is not normal for me.",
+              "",
+              "I often feel utterly enraged inside and must exert myself to the utmost to control myself."
+            ]
           }
         ]
       }
@@ -664,6 +899,8 @@
     const footerTextEl = document.getElementById("footer-text");
     const resultTitleEl = document.getElementById("result-title");
     const resultSubtitleEl = document.getElementById("result-subtitle");
+    const gdprTextEl = document.getElementById("gdpr-text");
+    const gdprTextResultEl = document.getElementById("gdpr-text-result");
 
     // ============================================
     // INITIALIZATION
@@ -680,6 +917,7 @@
       currentLanguage = detectLanguage();
       renderQuestions();
       updateUI();
+      updateNextButtonState();
       questionsRendered = true;
     }
 
@@ -696,9 +934,31 @@
         questionEl.className = `question-container ${index === 0 ? "active" : ""}`;
         questionEl.id = `question-${index}`;
 
+        // Build answer options HTML
+        const optionsHTML = question.options.map((option, optionIndex) => {
+          if (option === "") {
+            return '';
+          }
+          return `
+            <label class="answer-option ${answers[index] === optionIndex ? 'selected' : ''}" 
+                   for="q${index}-text-${optionIndex}">
+              <input type="radio" 
+                     id="q${index}-text-${optionIndex}" 
+                     name="question-${index}" 
+                     value="${optionIndex}" 
+                     onchange="selectAnswer(${index}, ${optionIndex})"
+                     ${answers[index] === optionIndex ? 'checked' : ''}>
+              ${option}
+            </label>
+          `;
+        }).join("");
+
         questionEl.innerHTML = `
           <div class="question-title">${question.title}</div>
           <div class="question-text">${question.text}</div>
+          <div class="answer-options">
+            ${optionsHTML}
+          </div>
           <div class="answer-scale" id="scale-${index}">
             ${[0, 1, 2, 3, 4, 5, 6].map(value => `
               <label class="scale-option ${answers[index] === value ? 'selected' : ''}" 
@@ -734,6 +994,17 @@
       if (currentQuestionEl) {
         currentQuestionEl.classList.add("active");
         
+        // Update selected state for text options
+        const textOptions = currentQuestionEl.querySelectorAll('.answer-option');
+        textOptions.forEach((opt, optIndex) => {
+          const input = opt.querySelector('input');
+          if (input && answers[index] === parseInt(input.value)) {
+            opt.classList.add('selected');
+          } else {
+            opt.classList.remove('selected');
+          }
+        });
+        
         // Update selected state for scale options
         const scaleOptions = currentQuestionEl.querySelectorAll('.scale-option');
         scaleOptions.forEach((opt, optIndex) => {
@@ -747,6 +1018,7 @@
 
       currentQuestionIndex = index;
       updateUI();
+      updateNextButtonState();
     }
 
     function nextQuestion() {
@@ -766,12 +1038,24 @@
     function selectAnswer(questionIndex, value) {
       answers[questionIndex] = value;
       
-      // Update selected state
-      const scaleEl = document.getElementById(`scale-${questionIndex}`);
-      if (scaleEl) {
-        const options = scaleEl.querySelectorAll('.scale-option');
-        options.forEach((opt, idx) => {
-          if (idx === value) {
+      // Update selected state for current question
+      const currentQuestionEl = document.getElementById(`question-${questionIndex}`);
+      if (currentQuestionEl) {
+        // Update text options
+        const textOptions = currentQuestionEl.querySelectorAll('.answer-option');
+        textOptions.forEach((opt, optIndex) => {
+          const input = opt.querySelector('input');
+          if (input && parseInt(input.value) === value) {
+            opt.classList.add('selected');
+          } else {
+            opt.classList.remove('selected');
+          }
+        });
+        
+        // Update scale options
+        const scaleOptions = currentQuestionEl.querySelectorAll('.scale-option');
+        scaleOptions.forEach((opt, optIndex) => {
+          if (optIndex === value) {
             opt.classList.add('selected');
           } else {
             opt.classList.remove('selected');
@@ -779,11 +1063,29 @@
         });
       }
       
+      updateNextButtonState();
+      
       // Auto-advance if not on last question
       if (questionIndex < 8) {
         setTimeout(() => {
           showQuestion(questionIndex + 1);
         }, 200);
+      }
+    }
+
+    // ============================================
+    // NEXT BUTTON STATE - NEW
+    // ============================================
+
+    function updateNextButtonState() {
+      const currentAnswer = answers[currentQuestionIndex];
+      
+      if (currentQuestionIndex < 8) {
+        // Disable next button if no answer selected for current question
+        nextBtn.disabled = currentAnswer === null;
+      } else {
+        // For last question, allow showing result even if no answer (but warn user)
+        nextBtn.disabled = false;
       }
     }
 
@@ -817,6 +1119,8 @@
       infoTitleEl.textContent = lang.infoTitle;
       infoTextEl.textContent = lang.infoText;
       footerTextEl.textContent = lang.footerText;
+      gdprTextEl.textContent = lang.gdprText;
+      gdprTextResultEl.textContent = lang.gdprText;
 
       // Hide questions
       questionPagesEl.style.display = "none";
@@ -887,6 +1191,9 @@
         nextBtn.textContent = lang.finish || lang.next;
       }
 
+      // Update GDPR text
+      gdprTextEl.textContent = lang.gdprText;
+      
       // Update footer
       footerTextEl.textContent = lang.footerText;
     }
@@ -896,10 +1203,15 @@
     // ============================================
 
     document.addEventListener("keydown", (e) => {
-      // Next question with Enter or Right Arrow
-      if ((e.key === "Enter" || e.key === "ArrowRight") && currentQuestionIndex < 8) {
-        e.preventDefault();
-        nextQuestion();
+      // Next question with Enter or Right Arrow (only if answer selected or not first question)
+      if ((e.key === "Enter" || e.key === "ArrowRight")) {
+        if (currentQuestionIndex < 8 && answers[currentQuestionIndex] !== null) {
+          e.preventDefault();
+          nextQuestion();
+        } else if (currentQuestionIndex === 8) {
+          e.preventDefault();
+          nextQuestion();
+        }
       }
       // Previous question with Left Arrow
       else if (e.key === "ArrowLeft" && currentQuestionIndex > 0) {
